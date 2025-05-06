@@ -1,30 +1,22 @@
 "use client"
 
-import { useRef, useMemo } from "react"
-import { useFrame } from "@react-three/fiber"
-import { Text } from "@react-three/drei"
-import type * as THREE from "three"
+import { useMemo } from "react"
 
 interface BinarySearchProps {
   step: number
 }
 
 export default function BinarySearch({ step }: BinarySearchProps) {
-  const groupRef = useRef<THREE.Group>(null)
-
   // Sample sorted array
   const array = useMemo(() => [5, 13, 19, 24, 29, 38, 45, 53, 67, 78, 91], [])
 
   // Binary search steps (searching for 45)
   const searchSteps = useMemo(
     () => [
-      { left: 0, right: 10, mid: 5, found: false }, // Initial state
-      { left: 0, right: 4, mid: 2, found: false }, // 38 > 19, go left
-      { left: 3, right: 4, mid: 3, found: false }, // 19 < 45, go right
-      { left: 4, right: 4, mid: 4, found: false }, // 24 < 45, go right
-      { left: 5, right: 4, mid: 5, found: false }, // 29 < 45, go right
-      { left: 6, right: 10, mid: 8, found: false }, // 67 > 45, go left
-      { left: 6, right: 7, mid: 6, found: true }, // Found 45!
+      { left: 0, right: 10, mid: 5, found: false, comparison: "38 < 45" }, // Initial state
+      { left: 6, right: 10, mid: 8, found: false, comparison: "67 > 45" }, // 38 < 45, go right
+      { left: 6, right: 7, mid: 6, found: false, comparison: "45 == 45" }, // 67 > 45, go left
+      { left: 6, right: 7, mid: 6, found: true, comparison: "Found 45!" }, // Found 45!
     ],
     [],
   )
@@ -34,76 +26,79 @@ export default function BinarySearch({ step }: BinarySearchProps) {
     return searchSteps[Math.min(step, searchSteps.length - 1)]
   }, [searchSteps, step])
 
-  // Gentle animation
-  useFrame((state) => {
-    if (groupRef.current) {
-      groupRef.current.rotation.x = Math.sin(state.clock.getElapsedTime() * 0.3) * 0.1
-    }
-  })
-
   return (
-    <group ref={groupRef} position={[0, 0, 0]}>
-      {/* Array elements */}
-      {array.map((value, index) => {
-        // Determine element color based on search state
-        let color = "#e9ecef" // Default color
+    <div className="w-full h-full flex flex-col items-center justify-center p-4">
+      <div className="mb-8 text-center">
+        <h2 className="text-2xl font-bold mb-2">{currentSearch.found ? "Target Found! 🎉" : "Searching for 45..."}</h2>
+        <p className="text-lg">{currentSearch.comparison}</p>
+      </div>
 
-        if (currentSearch.found && index === currentSearch.mid) {
-          color = "#51cf66" // Found
-        } else if (index === currentSearch.mid) {
-          color = "#ff6b6b" // Current mid
-        } else if (index >= currentSearch.left && index <= currentSearch.right) {
-          color = "#4dabf7" // In current search range
-        }
+      <div className="flex items-end space-x-2 mb-8">
+        {array.map((value, index) => {
+          // Determine element appearance
+          let bgColor = "bg-gray-200 dark:bg-gray-700"
+          let textColor = "text-gray-800 dark:text-gray-200"
+          let scale = "transform scale-100"
+          let border = "border-2 border-transparent"
 
-        const xPos = (index - array.length / 2) * 1.5
+          if (currentSearch.found && index === currentSearch.mid) {
+            bgColor = "bg-green-500"
+            textColor = "text-white"
+            scale = "transform scale-110"
+            border = "border-2 border-green-700"
+          } else if (index === currentSearch.mid) {
+            bgColor = "bg-red-500"
+            textColor = "text-white"
+            scale = "transform scale-110"
+            border = "border-2 border-red-700"
+          } else if (index >= currentSearch.left && index <= currentSearch.right) {
+            bgColor = "bg-blue-500"
+            textColor = "text-white"
+          }
 
-        return (
-          <group key={index} position={[xPos, 0, 0]}>
-            {/* Box */}
-            <mesh>
-              <boxGeometry args={[1.3, 1.3, 1.3]} />
-              <meshStandardMaterial color={color} />
-            </mesh>
+          return (
+            <div key={index} className={`flex flex-col items-center transition-all duration-300 ${scale}`}>
+              <div
+                className={`w-14 h-14 ${bgColor} ${textColor} ${border} rounded-lg flex items-center justify-center text-2xl font-bold shadow-md`}
+              >
+                {value}
+              </div>
+              <div className="mt-2 text-lg font-medium">{index}</div>
 
-            {/* Value */}
-            <Text position={[0, 0, 0.7]} fontSize={0.6} color="#000000" anchorX="center" anchorY="middle">
-              {value}
-            </Text>
+              {/* Markers for left, right, mid */}
+              <div className="h-8 mt-1">
+                {index === currentSearch.left && (
+                  <div className="bg-white dark:bg-slate-800 px-2 py-1 rounded shadow-lg text-lg font-bold text-blue-600">
+                    L
+                  </div>
+                )}
+                {index === currentSearch.right && (
+                  <div className="bg-white dark:bg-slate-800 px-2 py-1 rounded shadow-lg text-lg font-bold text-blue-600">
+                    R
+                  </div>
+                )}
+                {index === currentSearch.mid && (
+                  <div className="bg-white dark:bg-slate-800 px-2 py-1 rounded shadow-lg text-lg font-bold text-purple-600">
+                    MID
+                  </div>
+                )}
+              </div>
+            </div>
+          )
+        })}
+      </div>
 
-            {/* Index */}
-            <Text position={[0, -1, 0]} fontSize={0.4} color="#000000" anchorX="center" anchorY="middle">
-              {index}
-            </Text>
-
-            {/* Markers for left, right, mid */}
-            {index === currentSearch.left && (
-              <Text position={[0, 1.5, 0]} fontSize={0.5} color="#000000" anchorX="center" anchorY="middle">
-                L
-              </Text>
-            )}
-
-            {index === currentSearch.right && (
-              <Text position={[0, 1.5, 0]} fontSize={0.5} color="#000000" anchorX="center" anchorY="middle">
-                R
-              </Text>
-            )}
-
-            {index === currentSearch.mid && (
-              <Text position={[0, 2, 0]} fontSize={0.5} color="#000000" anchorX="center" anchorY="middle">
-                MID
-              </Text>
-            )}
-          </group>
-        )
-      })}
-
-      {/* Step information */}
-      <Text position={[0, -3, 0]} fontSize={0.7} color="#000000" anchorX="center" anchorY="middle">
-        {currentSearch.found
-          ? "Target 45 found at index 6!"
-          : `Searching for 45: L=${currentSearch.left}, R=${currentSearch.right}, Mid=${currentSearch.mid}`}
-      </Text>
-    </group>
+      <div className="bg-purple-100 dark:bg-purple-900/30 p-4 rounded-lg max-w-2xl">
+        <h3 className="text-xl font-bold mb-2">How Binary Search Works:</h3>
+        <ol className="list-decimal pl-6 space-y-2 text-lg">
+          <li>Start with a sorted array</li>
+          <li>Compare the target value with the middle element</li>
+          <li>If the target matches the middle element, we're done!</li>
+          <li>If the target is smaller, search the left half</li>
+          <li>If the target is larger, search the right half</li>
+          <li>Repeat until the target is found or the search space is empty</li>
+        </ol>
+      </div>
+    </div>
   )
 }

@@ -1,17 +1,12 @@
 "use client"
 
-import { useRef, useMemo } from "react"
-import { useFrame } from "@react-three/fiber"
-import { Text } from "@react-three/drei"
-import type * as THREE from "three"
+import { useMemo } from "react"
 
 interface InsertionSortProps {
   step: number
 }
 
 export default function InsertionSort({ step }: InsertionSortProps) {
-  const groupRef = useRef<THREE.Group>(null)
-
   // Initial unsorted array
   const initialArray = useMemo(() => [29, 10, 14, 37, 20, 25, 44, 15], [])
 
@@ -82,61 +77,72 @@ export default function InsertionSort({ step }: InsertionSortProps) {
     return sortSteps[Math.min(step, sortSteps.length - 1)]
   }, [sortSteps, step])
 
-  // Gentle animation
-  useFrame((state) => {
-    if (groupRef.current) {
-      groupRef.current.rotation.x = Math.sin(state.clock.getElapsedTime() * 0.3) * 0.1
+  // Get step description
+  const getStepDescription = () => {
+    if (currentSort.current === null && currentSort.sorted.length === initialArray.length) {
+      return "Array sorted!"
+    } else if (currentSort.current !== null) {
+      return `Inserting ${currentSort.array[currentSort.current]} at the right position`
+    } else {
+      return "Starting insertion sort"
     }
-  })
+  }
 
   return (
-    <group ref={groupRef} position={[0, 0, 0]}>
-      {/* Array elements */}
-      {currentSort.array.map((value, index) => {
-        // Determine element color and position based on sort state
-        let color = "#e9ecef" // Default color
-        let yOffset = 0
+    <div className="w-full h-full flex flex-col items-center justify-center p-4">
+      <h2 className="text-2xl font-bold mb-4">Insertion Sort</h2>
+      <p className="text-xl mb-6">{getStepDescription()}</p>
 
-        if (index === currentSort.current) {
-          color = "#ff6b6b" // Current element being inserted
-          yOffset = 0.5
-        } else if (index === currentSort.comparing) {
-          color = "#ffd43b" // Element being compared
-        } else if (currentSort.sorted.includes(index)) {
-          color = "#51cf66" // Sorted portion
-        }
+      <div className="flex items-end space-x-4 mb-8">
+        {currentSort.array.map((value, index) => {
+          // Determine element appearance
+          let bgColor = "bg-gray-200 dark:bg-gray-700"
+          let textColor = "text-gray-800 dark:text-gray-200"
+          let scale = "transform scale-100"
+          let border = "border-2 border-transparent"
 
-        const xPos = (index - currentSort.array.length / 2) * 1.8
+          if (index === currentSort.current) {
+            bgColor = "bg-red-500"
+            textColor = "text-white"
+            scale = "transform scale-110"
+            border = "border-2 border-red-700"
+          } else if (index === currentSort.comparing) {
+            bgColor = "bg-yellow-500"
+            textColor = "text-white"
+            scale = "transform scale-105"
+            border = "border-2 border-yellow-700"
+          } else if (currentSort.sorted.includes(index)) {
+            bgColor = "bg-green-500"
+            textColor = "text-white"
+          }
 
-        return (
-          <group key={index} position={[xPos, yOffset, 0]}>
-            {/* Box */}
-            <mesh>
-              <boxGeometry args={[1.5, value / 10, 1.5]} />
-              <meshStandardMaterial color={color} />
-            </mesh>
+          // Calculate height based on value
+          const height = `${Math.max(value * 2, 30)}px`
 
-            {/* Value */}
-            <Text position={[0, value / 20 + 0.5, 0]} fontSize={0.6} color="#000000" anchorX="center" anchorY="middle">
-              {value}
-            </Text>
+          return (
+            <div key={index} className={`flex flex-col items-center transition-all duration-300 ${scale}`}>
+              <div
+                className={`w-14 ${bgColor} ${textColor} ${border} rounded-t-lg flex items-center justify-center text-xl font-bold shadow-md`}
+                style={{ height }}
+              >
+                {value}
+              </div>
+              <div className="mt-2 text-lg font-medium">{index}</div>
+            </div>
+          )
+        })}
+      </div>
 
-            {/* Index */}
-            <Text position={[0, -value / 20 - 0.5, 0]} fontSize={0.4} color="#000000" anchorX="center" anchorY="middle">
-              {index}
-            </Text>
-          </group>
-        )
-      })}
-
-      {/* Step information */}
-      <Text position={[0, -3, 0]} fontSize={0.7} color="#000000" anchorX="center" anchorY="middle">
-        {step >= sortSteps.length - 1
-          ? "Array sorted!"
-          : currentSort.current !== null
-            ? `Inserting ${currentSort.array[currentSort.current]} at the right position`
-            : "Starting insertion sort"}
-      </Text>
-    </group>
+      <div className="bg-purple-100 dark:bg-purple-900/30 p-4 rounded-lg max-w-2xl">
+        <h3 className="text-xl font-bold mb-2">How Insertion Sort Works:</h3>
+        <ol className="list-decimal pl-6 space-y-2 text-lg">
+          <li>Start with the second element (index 1)</li>
+          <li>Compare it with elements to its left</li>
+          <li>Shift elements greater than the current element to the right</li>
+          <li>Insert the current element in its correct position</li>
+          <li>Repeat for all elements in the array</li>
+        </ol>
+      </div>
+    </div>
   )
 }
