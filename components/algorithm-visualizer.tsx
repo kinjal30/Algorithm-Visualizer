@@ -91,7 +91,7 @@ export default function AlgorithmVisualizer({ algorithm }: AlgorithmVisualizerPr
   return (
     <div className="flex flex-col h-full">
       <Tabs defaultValue="visualization" className="flex-1 flex flex-col">
-        <div className="border-b px-4 bg-white dark:bg-slate-800">
+        <div className="border-b px-4 bg-white dark:bg-slate-800 sticky top-0 z-10">
           <div className="flex justify-between items-center">
             <TabsList className="w-auto justify-start">
               <TabsTrigger value="visualization" className="flex items-center gap-2">
@@ -110,7 +110,7 @@ export default function AlgorithmVisualizer({ algorithm }: AlgorithmVisualizerPr
           </div>
         </div>
 
-        <TabsContent value="visualization" className="flex-1 flex flex-col mt-0">
+        <TabsContent value="visualization" className="flex-1 flex flex-col mt-0 overflow-auto">
           <div className="flex-1 relative">
             {/* Problem Statement Card */}
             <div className="p-4">
@@ -129,7 +129,7 @@ export default function AlgorithmVisualizer({ algorithm }: AlgorithmVisualizerPr
 
             <VisualizationCanvas2D algorithmId={algorithm.id} step={currentStep} />
 
-            <div className="absolute bottom-4 left-4 right-4 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-lg p-4 shadow-lg">
+            <div className="sticky bottom-4 left-4 right-4 mx-4 mt-4 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-lg p-4 shadow-lg z-10">
               <div className="flex flex-col gap-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">

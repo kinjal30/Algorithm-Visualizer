@@ -45,11 +45,14 @@ export default function VisualizationCanvas2D({ algorithmId, step }: Visualizati
   }
 
   return (
-    <div className="w-full h-[500px] bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden">
+    <div
+      className="w-full bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-auto"
+      style={{ minHeight: "500px", maxHeight: "calc(100vh - 300px)" }}
+    >
       <ErrorBoundary FallbackComponent={ErrorFallback} onError={(error) => setError(error)}>
         <Suspense
           fallback={
-            <div className="flex items-center justify-center h-full">
+            <div className="flex items-center justify-center h-[500px]">
               <div className="text-center">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-700 mx-auto mb-4"></div>
                 <p className="text-lg">Loading visualization...</p>

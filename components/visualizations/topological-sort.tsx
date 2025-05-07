@@ -88,7 +88,7 @@ export default function TopologicalSort({ step }: TopologicalSortProps) {
   })
 
   return (
-    <div className="w-full h-full flex flex-col items-center p-4">
+    <div className="w-full flex flex-col items-center p-4 pb-20">
       <h2 className="text-2xl font-bold mb-4">Topological Sort</h2>
       <p className="text-xl mb-6">{currentSort.active ? `Visiting ${currentSort.active}` : "Processing stack"}</p>
 
@@ -160,7 +160,7 @@ export default function TopologicalSort({ step }: TopologicalSortProps) {
       </div>
 
       {/* Stack and Result Visualization */}
-      <div className="mt-8 flex gap-8">
+      <div className="mt-8 flex gap-8 flex-wrap justify-center">
         <div className="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-lg">
           <h3 className="text-xl font-bold mb-2">Stack</h3>
           <div className="flex flex-col-reverse gap-2 items-center">

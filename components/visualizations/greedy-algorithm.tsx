@@ -116,7 +116,7 @@ export default function GreedyAlgorithm({ step }: GreedyAlgorithmProps) {
   const timelineEnd = 10
 
   return (
-    <div className="w-full h-full flex flex-col items-center p-4">
+    <div className="w-full flex flex-col items-center p-4 pb-20">
       <h2 className="text-3xl font-bold mb-6">Greedy Algorithm: Activity Selection</h2>
 
       {/* Problem Statement */}
@@ -143,7 +143,7 @@ export default function GreedyAlgorithm({ step }: GreedyAlgorithmProps) {
         <h3 className="text-2xl font-bold mb-4">Activity Timeline</h3>
 
         {/* Legend */}
-        <div className="flex gap-6 mb-6">
+        <div className="flex gap-6 mb-6 flex-wrap">
           <div className="flex items-center">
             <div className="w-8 h-8 bg-gray-200 dark:bg-gray-700 border-2 border-gray-400 rounded-lg mr-2"></div>
             <span className="text-base">Unselected</span>
